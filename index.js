@@ -14,8 +14,6 @@ const init = async() => {
         }
     });
 
-    let user;
-
     await server.register([require('inert'),require('vision')]);
 
     server.views({
@@ -26,8 +24,8 @@ const init = async() => {
         layout:'user/default'
     })
 
-    const userRouter =  require('./Router/userRouter');
-    server.route(userRouter);
+    const User =  require('./Router/userRouter');
+    server.route(User.UserRouter);
 
     const bookRouter = require('./Router/bookRouter');
     server.route(bookRouter)

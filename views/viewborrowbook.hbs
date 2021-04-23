@@ -2,11 +2,9 @@
     {{#each results}}
         <h3>Book_Id: {{{this.book_id}}}</h3>
         <h3>Start_at: {{{this.start_at}}}</h3>
-        <h3 id="returndate">Return_at: {{{this.end_at}}}</h3>
+        <h3>Return_at: {{{this.end_at}}}</h3>
         {{#if status}}
         {{else}}
-        <button><a href="/return/{{this.book_id}}/?user={{../user}}">Return</a></button>
+        <button><a href="/return/{{this.book_id}}">Return</a></button>
         {{/if}}
     {{/each}}
-
-    {{user}}

@@ -1,7 +1,11 @@
 const Users = require('../models/user');
-let user;
+let user = "";
 
-module.exports = [
+const getUser  = () =>{
+    return user;
+}
+
+const UserRouter = [
     {
         method: 'GET',
         path: '/',
@@ -50,7 +54,7 @@ module.exports = [
     },
     {
         method: 'GET',
-        path: '/borrow',
+        path: '/getuser',
         handler: async function(request,reply){
             return reply(user);
         }
@@ -102,3 +106,8 @@ module.exports = [
     //     }
     // }
 ];
+
+module.exports = {
+    UserRouter,
+    getUser
+}
