@@ -14,6 +14,8 @@ const init = async() => {
         }
     });
 
+    let user;
+
     await server.register([require('inert'),require('vision')]);
 
     server.views({
@@ -27,8 +29,11 @@ const init = async() => {
     const userRouter =  require('./Router/userRouter');
     server.route(userRouter);
 
-    const adminRouter = require('./Router/adminRouter');
-    server.route(adminRouter)
+    const bookRouter = require('./Router/bookRouter');
+    server.route(bookRouter)
+
+    const borrowRouter = require('./Router/borrowRouter');
+    server.route(borrowRouter)
 
     await server.start();
     console.log(`Server Started at ${server.info.uri}`)

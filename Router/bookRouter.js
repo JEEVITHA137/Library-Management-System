@@ -1,4 +1,5 @@
 const Books = require('../models/book');
+const user = require('../models/user');
 
 module.exports = [
     {
@@ -65,6 +66,26 @@ module.exports = [
             value = JSON.stringify(value,null,2);
             const results = JSON.parse(value);
             reply.view('editBook',results[0],{ layout: 'admin/default'});
+        }
+    },
+    {
+        method: 'GET',
+        path: '/books/all',
+        handler:  async function(request, reply) {
+           let value = await Books.findAll({order:[['name','ASC']]});
+           value =  JSON.stringify(value,null,2);
+           const results = JSON.parse(value)
+           reply.view('books',{results})
+        }
+    },
+    {
+        method: 'GET',
+        path: '/viewbooks/{id}',
+        handler:async function(request, reply) {
+            let value = await Books.findOne({where:{id:request.params.id}});
+            value = JSON.stringify(value,null,2);
+            const results = JSON.parse(value);
+            return reply.view('viewbookUser',{results});
         }
     }
 ];

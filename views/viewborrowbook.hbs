@@ -5,6 +5,8 @@
         <h3 id="returndate">Return_at: {{{this.end_at}}}</h3>
         {{#if status}}
         {{else}}
-        <button><a href="/return/{{this.book_id}}">Return</a></button>
+        <button><a href="/return/{{this.book_id}}/?user={{../user}}">Return</a></button>
         {{/if}}
     {{/each}}
+
+    {{user}}
