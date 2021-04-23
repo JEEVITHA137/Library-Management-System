@@ -1,0 +1,9 @@
+<h1>{{results.0.name}}</h1>
+<h3>Author: {{{results.0.author}}}</h3>
+<h4>Description: {{{results.0.description}}}</h4>
+    {{#if results.0.quantity}}
+        <a href="/borrow/{{results.0.id}}">Borrow a Book</a>
+    {{else}}
+         <p>No Stock is Available</p>
+    {{/if}}
+ {{{user}}}

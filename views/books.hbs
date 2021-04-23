@@ -1,0 +1,8 @@
+<h1>Books</h1>
+    {{#each results}}
+        <div>
+         <a href='/viewbooks/{{{this.id}}}'> <p>Name:{{{name}}}</p></a>
+        <p>Authour:{{{this.author}}}</p>
+        </div>
+    {{/each}}
+       {{{user}}}

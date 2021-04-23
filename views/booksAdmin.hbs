@@ -1,0 +1,9 @@
+<h1>Books</h1>
+    {{#each results}}
+        <div>
+        <a href='/book/{{this.id}}'> <p>Name:{{this.name}}</p></a>
+        <p>Authour:{{this.author}}</p>
+        <a href='/book/edit/{{this.id}}'>Edit</a>
+        <a href='/book/delete/{{this.id}}'>Delete</a>
+        </div>
+    {{/each}}
