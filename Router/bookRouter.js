@@ -1,5 +1,4 @@
 const Books = require('../models/book');
-const user = require('../models/user');
 
 module.exports = [
     {
@@ -62,10 +61,10 @@ module.exports = [
         method: 'GET',
         path: '/book/edit/{id}',
         handler: async function(request, reply) {
-            let value = await Books.findAll({where:{id:request.params.id}});
+            let value = await Books.findOne({where:{id:request.params.id}});
             value = JSON.stringify(value,null,2);
             const results = JSON.parse(value);
-            reply.view('editBook',results[0],{ layout: 'admin/default'});
+            reply.view('editBook',results,{ layout: 'admin/default'});
         }
     },
     {

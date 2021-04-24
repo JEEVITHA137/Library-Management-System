@@ -28,10 +28,10 @@ const init = async() => {
     server.route(User.UserRouter);
 
     const bookRouter = require('./Router/bookRouter');
-    server.route(bookRouter)
+    server.route(bookRouter);
 
     const borrowRouter = require('./Router/borrowRouter');
-    server.route(borrowRouter)
+    server.route(borrowRouter);
 
     await server.start();
     console.log(`Server Started at ${server.info.uri}`)

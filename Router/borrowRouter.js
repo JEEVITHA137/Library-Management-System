@@ -1,24 +1,32 @@
 const Sequelize = require('sequelize');
 const Users = require('./userRouter');
-
-const sequelize = new Sequelize('Library_Management_System','postgres','postgres',{
-    host: 'localhost',
-    port: 5432,
-    dialect: 'postgres'
-});
+const Book = require('../models/book');
+const Borrow = require('../models/borrow');
 
 module.exports = [
     {
         method: 'GET',
         path: '/borrow/view',
         handler: async function(request, reply) {
-            var currentDate = new Date();
-            const date = currentDate.getDate();
-            const month = currentDate.getMonth();
-            const year = currentDate.getFullYear();
             const user = Users.getUser();
-            const [results,metadata] =  await sequelize.query(`SELECT * FROM borrow WHERE user_id=${user};`);
-            return reply.view('viewborrowbook',{results,date,month,year,user})
+            let results;
+            if(user != "")
+            {
+                let value = await Borrow.findAll({where:{user_id:user}}).catch((err) => console.log(err));
+                value = JSON.stringify(value,null,2);
+                results = JSON.parse(value);
+                
+                for(let i of results)
+                {
+                    console.log(i.start_at)
+                    const startDate = i.start_at.split('T');
+                    const endDate = i.end_at.split('T');
+                    i.start_at = startDate[0];
+                    i.end_at = endDate[0];
+                }
+            }
+            
+            return reply.view('viewborrowbook',{results,user})
         }
     },
     {
@@ -40,21 +48,23 @@ module.exports = [
             const user = Users.getUser();
             let start_date = new Date(request.payload.start_at);
             let end_date = new Date(request.payload.return_at);
-            
-            const [results1,metadata1] =  await sequelize.query(`UPDATE Book SET quantity = quantity-1 WHERE id=${request.params.id};`);
-            const [results2,metadata2] =  await sequelize.query(`INSERT INTO public.borrow(book_id, user_id, start_at, end_at,status) VALUES (${request.params.id}, ${user}, '${start_date.getDate()}-${start_date.getMonth()}-${start_date.getFullYear()}', '${end_date.getDate()}-${end_date.getMonth()}-${end_date.getFullYear()}',false);`);
-            return reply.redirect('/books/all',+request.query.user);
+            await Borrow.create({book_id:request.params.id, user_id:user, start_at:start_date, end_at:end_date,status:false})
+            .then(()=>{return reply.redirect('/books/all')})
+            .catch((err)=>{console.log(err);return reply(err)});
+            await Book.decrement('quantity', { where: { id: request.params.id }})
+            .catch((err) => console.log(err));
         }
     },
     {
         method: ['GET','PUT'],
         path: '/return/{id}',
         handler: async function(request, reply) {
-            const user = Users.getUser();
-            const [results,metadata] =  await sequelize.query(`UPDATE borrow SET status=TRUE WHERE user_id=${user} AND book_id=${request.params.id};`);
-            const [results1,metadata1] =  await sequelize.query(`UPDATE Book SET quantity = quantity+1 WHERE id=${request.params.id};`);
-            console.log("update done")
-            return reply.redirect('/books/all/',+request.query.user);
+            await Borrow.update({status:true},{
+                where:{id:request.params.id}
+            }).catch((err) => console.log(err));
+            await Book.increment('quantity', { where: { id: request.query.book }})
+            .catch((err) => console.log(err));
+            return reply.redirect('/books/all');
         }
     }
 ];
