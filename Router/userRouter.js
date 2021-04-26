@@ -1,4 +1,5 @@
 const Users = require('../models/user');
+
 let user = "";
 
 const getUser  = () =>{
@@ -8,24 +9,35 @@ const getUser  = () =>{
 const UserRouter = [
     {
         method: 'GET',
-        path: '/',
-        handler: (request, reply) => {
-            reply.file('login.html');
+        path: '/login',
+        config:{
+            handler: (request, reply) => {
+                if(user != "")
+                {
+                    reply("already authenticated!")
+                }
+                else{
+                    reply.file('login.html');
+                }
+            }
         }
     },
     {
         method: 'POST',
-        path: '/',
+        path: '/login',
         handler: async function(request, reply) {
+            const {username,password} = request.payload.password;
             let value = await Users.findAll({where:{username:request.payload.username, password:request.payload.password}});
             value = JSON.stringify(value,null,2);
             const results = JSON.parse(value);
- 
+     
             if(results.length === 0)
             {
-                return reply("<h1>Incorrect Credentials</h1>")
+                return  reply.redirect('/')
             }
-
+        
+            request.cookieAuth.set({username})
+        
             if(request.payload.username === "Admin")
             {
                 return reply.redirect('/book')
@@ -34,7 +46,7 @@ const UserRouter = [
                 user = results[0].user_id;
                 return reply.redirect('/books/all');
             }
-        }
+        } 
     },
     {
         method: 'GET',
@@ -57,6 +69,15 @@ const UserRouter = [
         path: '/getuser',
         handler: async function(request,reply){
             return reply(user);
+        }
+    },
+    {
+        method: 'GET',
+        path: '/logout',
+        handler: (request,reply) => {
+            request.cookieAuth.clear();
+            user = "";
+            return reply.redirect('/');
         }
     }
 ];

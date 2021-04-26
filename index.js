@@ -1,4 +1,5 @@
 const Hapi = require('hapi');
+const { request } = require('http');
 const path = require('path');
 
 const init = async() => {
@@ -14,14 +15,20 @@ const init = async() => {
         }
     });
 
-    await server.register([require('inert'),require('vision')]);
+    await server.register([require('inert'),require('vision'),require('hapi-auth-cookie')]);
+
+    server.auth.strategy('loginAuth','cookie',{
+        password:'Thisthecookiewrareusedhjghdfgfkjhmjvgfd',
+        cookie: 'session',
+        isSecure: false
+    })
 
     server.views({
         engines: {
             hbs: require('handlebars')
         },
         path: path.join(__dirname,'views'),
-        layout:'user/default'
+        layout:'layouts/default'
     })
 
     const User =  require('./Router/userRouter');
