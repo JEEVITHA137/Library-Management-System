@@ -1,18 +1,12 @@
 const Users = require('../models/user');
 
-let user = "";
-
-const getUser  = () =>{
-    return user;
-}
-
-const UserRouter = [
+module.exports = [
     {
         method: 'GET',
         path: '/',
         config:{
             handler: (request, reply) => {
-                if(user != "")
+                if(request.state.session)
                 {
                     reply("already authenticated!")
                 }
@@ -25,29 +19,29 @@ const UserRouter = [
     {
         method: 'POST',
         path: '/',
+        config:{
+           
         handler: async function(request, reply) {
-            const {username,password} = request.payload.password;
-            let value = await Users.findAll({where:{username:request.payload.username, password:request.payload.password}});
-            value = JSON.stringify(value,null,2);
-            const results = JSON.parse(value);
-     
-            if(results.length === 0)
+            let value = await Users.findOne({where:{username:request.payload.username, password:request.payload.password}});
+
+            if(value == null)
             {
                 return  reply.redirect('/')
             }
-        
-            request.cookieAuth.set({username});
-            request.isAuthenticated = true;
-            console.log(request.auth)
+            value = JSON.stringify(value,null,2);
+            const results = JSON.parse(value);
+
+            const user = results.user_id;
+            request.cookieAuth.set({user});
+            
             if(request.payload.username === "Admin")
             {
                 return reply.redirect('/book')
             }
             else{
-                user = results[0].user_id;
                 return reply.redirect('/books/all');
             }
-        } 
+        } }
     },
     {
         method: 'GET',
@@ -77,13 +71,7 @@ const UserRouter = [
         path: '/logout',
         handler: (request,reply) => {
             request.cookieAuth.clear();
-            user = "";
             return reply.redirect('/');
         }
     }
 ];
-
-module.exports = {
-    UserRouter,
-    getUser
-}

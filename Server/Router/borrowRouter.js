@@ -8,7 +8,7 @@ module.exports = [
         method: 'GET',
         path: '/borrow/view',
         handler: async function(request, reply) {
-            const user = Users.getUser();
+            const user = request.state.session.user;
             let results;
             if(user != "")
             {
@@ -33,7 +33,7 @@ module.exports = [
         method: 'GET',
         path: '/borrow/{id}',
         handler: async function(request, reply) {
-            const user = Users.getUser();
+            const user = request.state.session.user;
             const data = {
                 book_id:request.params.id,
                 user_id:user
@@ -45,7 +45,7 @@ module.exports = [
         method: 'POST',
         path: '/borrow/{id}',
         handler:async function(request, reply) {
-            const user = Users.getUser();
+            const user = request.state.session.user;
             let start_date = new Date(request.payload.start_at);
             let end_date = new Date(request.payload.return_at);
             await Borrow.create({book_id:request.params.id, user_id:user, start_at:start_date, end_at:end_date,status:false})

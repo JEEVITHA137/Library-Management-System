@@ -18,10 +18,9 @@ const init = async() => {
     await server.register([require('inert'),require('vision'),require('hapi-auth-cookie')]);
 
     server.auth.strategy('loginAuth','cookie',{
-        password:'Thisthecookiewrareusedhjghdfgfkjhmjvgfd',
+        password:'ThisIsTheSecretPasswordForTheCookie',
         cookie: 'session',
         isSecure: false,
-
     })
 
     server.views({
@@ -32,8 +31,8 @@ const init = async() => {
         layout:'layouts/default'
     })
 
-    const User =  require('./Router/userRouter');
-    server.route(User.UserRouter);
+    const UserRouter =  require('./Router/userRouter');
+    server.route(UserRouter);
 
     const bookRouter = require('./Router/bookRouter');
     server.route(bookRouter);
