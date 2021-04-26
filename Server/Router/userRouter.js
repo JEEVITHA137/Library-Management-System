@@ -9,7 +9,7 @@ const getUser  = () =>{
 const UserRouter = [
     {
         method: 'GET',
-        path: '/login',
+        path: '/',
         config:{
             handler: (request, reply) => {
                 if(user != "")
@@ -24,7 +24,7 @@ const UserRouter = [
     },
     {
         method: 'POST',
-        path: '/login',
+        path: '/',
         handler: async function(request, reply) {
             const {username,password} = request.payload.password;
             let value = await Users.findAll({where:{username:request.payload.username, password:request.payload.password}});
@@ -36,8 +36,9 @@ const UserRouter = [
                 return  reply.redirect('/')
             }
         
-            request.cookieAuth.set({username})
-        
+            request.cookieAuth.set({username});
+            request.isAuthenticated = true;
+            console.log(request.auth)
             if(request.payload.username === "Admin")
             {
                 return reply.redirect('/book')

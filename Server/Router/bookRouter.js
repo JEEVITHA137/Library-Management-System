@@ -105,7 +105,7 @@ module.exports = [
     },
     {
         method: 'GET',
-        path: '/',
+        path: '/books/all',
         handler:  async function(request, reply) {
            let value = await Books.findAll({order:[['name','ASC']]});
            value =  JSON.stringify(value,null,2);

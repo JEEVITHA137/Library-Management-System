@@ -20,7 +20,8 @@ const init = async() => {
     server.auth.strategy('loginAuth','cookie',{
         password:'Thisthecookiewrareusedhjghdfgfkjhmjvgfd',
         cookie: 'session',
-        isSecure: false
+        isSecure: false,
+
     })
 
     server.views({
