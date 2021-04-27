@@ -19,8 +19,6 @@ module.exports = [
     {
         method: 'POST',
         path: '/',
-        config:{
-           
         handler: async function(request, reply) {
             let value = await Users.findOne({where:{username:request.payload.username, password:request.payload.password}});
 
@@ -41,7 +39,7 @@ module.exports = [
             else{
                 return reply.redirect('/books/all');
             }
-        } }
+        } 
     },
     {
         method: 'GET',
@@ -57,13 +55,6 @@ module.exports = [
             await Users.create({username:request.payload.username, password:request.payload.password})
             .catch((err) => console.log(err));
             return reply.redirect('/books/all');
-        }
-    },
-    {
-        method: 'GET',
-        path: '/getuser',
-        handler: async function(request,reply){
-            return reply(user);
         }
     },
     {
