@@ -9,8 +9,9 @@ const init = async() => {
         host: 'localhost',
         port: 1337,
         routes: {
-            files: {
-                relativeTo: path.join(__dirname,'public')
+            cors: {
+                origin: ['*'], // an array of origins or 'ignore'    
+                credentials: true // boolean - 'Access-Control-Allow-Credentials'
             }
         }
     });
@@ -20,7 +21,8 @@ const init = async() => {
     server.auth.strategy('loginAuth','cookie',{
         password:'ThisIsTheSecretPasswordForTheCookie',
         cookie: 'session',
-        isSecure: false,
+        isSecure: true,
+        isSameSite: false
     })
 
     server.views({

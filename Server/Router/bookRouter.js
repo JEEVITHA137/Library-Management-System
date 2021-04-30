@@ -1,126 +1,75 @@
 const Books = require('../models/book');
 
-module.exports = [
-    {
-        method: 'GET',
-        path: '/book',
-        config:{
-            auth:{
-                strategy:'loginAuth'
-            },
-            handler:  async function(request, reply) {
-                let value = await Books.findAll({order:[['name','ASC']]});
-                value =  JSON.stringify(value,null,2);
-                const results = JSON.parse(value)
-                reply.view('booksAdmin',{results},{ layout: 'layouts/adminDefault'})
-             }
-        }
-        
-    },
-    {
-        method: 'POST',
-        path: '/book',
-        config:{
-            auth:{
-                strategy:'loginAuth'
-            },
-            handler: async function(request,reply){
-                await Books.create({name:request.payload.name, author:request.payload.authour, description:request.payload.description, quantity:request.payload.quantity, cost:request.payload.cost})
-                .then(()=>{return reply('<h1>Book Added Successfully</h1><a href="/book">Books</a>')})
-                .catch((err)=>{return reply(err)});
-            }
-        }
-    },
-    {
-        method: ['POST','PUT'],
-        path: '/book/{id}',
-        config:{
-            auth:{
-                strategy:'loginAuth'
-            },
-            handler: async function(request, reply) {
-                await Books.update({name:request.payload.name, author:request.payload.author, description:request.payload.description, quantity:request.payload.quantity,cost:request.payload.cost},{
-                    where:{id:request.params.id}
-                })
-                .catch((err) => console.log(err));
-                return reply.redirect('/book');
-            }
-        }
-    },
-    {
-        method: 'GET',
-        path: '/book/{id}',
-        config:{
-            auth:{
-                strategy:'loginAuth'
-            },
-            handler:async function(request, reply) {
-                let value = await Books.findAll({where:{id:request.params.id}});
-                value = JSON.stringify(value,null,2);
-                const results = JSON.parse(value);
-                return reply.view('viewbookAdmin',results[0],{layout:'layouts/adminDefault'});
-            }
-        }
-    },
-    {
-        method:['GET','DELETE'],
-        path: '/book/delete/{id}',
-        config:{
-            auth:{
-                strategy:'loginAuth'
-            },
-            handler:async function(request, reply) {
-                await Books.destroy({where:{id:request.params.id}})
-                .catch((err) => console.log(err));
-                return reply.redirect('/book');
-            }
-        }
-    },
-    {
-        method: 'GET',
-        path: '/book/add',
-        config:{
-            auth:{
-                strategy:'loginAuth'
-            },
-            handler: (request, reply) => {
-                reply.file('addBook.html');
-            }
-        }
-    },
-    {
-        method: 'GET',
-        path: '/book/edit/{id}',
-        config:{
-            auth:{
-                strategy:'loginAuth'
-            },
-            handler: async function(request, reply) {
-                let value = await Books.findOne({where:{id:request.params.id}});
-                value = JSON.stringify(value,null,2);
-                const results = JSON.parse(value);
-                reply.view('editBook',results,{ layout: 'layouts/adminDefault'});
-            }
-        }
-    },
-    {
-        method: 'GET',
-        path: '/books/all',
-        handler:  async function(request, reply) {
-           let value = await Books.findAll({order:[['name','ASC']]});
-           value =  JSON.stringify(value,null,2);
-           const results = JSON.parse(value)
-           reply.view('books',{results})
-        }
-    },
-    {
-        method: 'GET',
-        path: '/viewbooks/{id}',
-        handler:async function(request, reply) {
-            let value = await Books.findOne({where:{id:request.params.id}});
-            value = JSON.stringify(value,null,2);
-            const results = JSON.parse(value);
-            return reply.view('viewbookUser',{results});
+module.exports = [{
+    method: 'GET',
+    path: '/books',
+    handler:  async function(request, reply) {
+        let value = await Books.findAll({
+            attributes: ['id','name', 'author'],
+            order:[['name','ASC']]
+        });
+        reply(value).code(200);
+    }
+}, 
+{
+    method: 'POST',
+    path: '/books',
+    config:{
+        auth:{
+            strategy:'loginAuth'
+        },
+        handler: async function(request,reply) {
+            const results = JSON.parse(request.payload);
+            console.log(results)
+            await Books.create({name:results.name, author:results.author, description:results.description, quantity:results.quantity, cost:results.cost})
+            .catch((err)=> reply(err));
+
+            reply(results);
         }
     }
-];
+}, 
+{
+    method: 'PUT',
+    path: '/books',
+    config:{
+        auth:{
+            strategy:'loginAuth'
+        },
+        handler: async function(request, reply) {
+            const results = JSON.parse(request.payload);
+            console.log(results)
+
+            await Books.update({name:results.name, author:results.author, description:results.description, quantity:results.quantity,cost:results.cost},{
+                where:{id:results.id}
+            })
+            .catch((err) => console.log(err));
+
+             return reply("Updated");
+        }
+    }
+}, 
+{
+    method: 'DELETE',
+    path: '/books',
+    config:{
+        auth:{
+            strategy:'loginAuth'
+        },
+        handler:async function(request, reply) {
+            console.log(request.payload)
+            await Books.destroy({where:{id:request.payload}})
+            .catch((err) => console.log(err));
+            return reply('Deleted Successfully');
+        }
+    }
+},  
+{
+    method: 'GET',
+    path: '/books/{id}',
+    handler:async function(request, reply) { 
+        let value = await Books.findOne({where:{id:request.params.id}});
+        value = JSON.stringify(value,null,2);
+        const results = JSON.parse(value);
+        return reply(results);
+}
+}];
